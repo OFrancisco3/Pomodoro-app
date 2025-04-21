@@ -8,7 +8,7 @@ import {
   Platform,
   TouchableOpacity,
 } from "react-native";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Header from "./src/components/Header";
 import Timer from "./src/components/Timer";
 import { Audio } from "expo-av";
@@ -20,6 +20,28 @@ export default function App() {
   const [time, setTime] = useState(25 * 60);
   const [currentTime, setcurrentTime] = useState("POMO" | "SHORT" | "BREAK");
   const [isActive, setIsActive] = useState(false);
+
+  useEffect(()=>{
+    let interval = null;
+
+    if(isActive){
+      //iniciar tiempo
+      interval = setInterval(() => {
+        setTime(time-1)
+      }, 1000);
+    }else{
+      // limpiar el intervalo
+      clearInterval(interval)
+    }
+
+    if(time===0){
+      setIsActive(false);
+      setIsWorking(prev=>!prev)
+      setTime(isWorking ?  300: 1500);
+    }
+
+    return ()=> clearInterval(interval)
+  },[isActive,time])
 
   function handleStartStop() {
     playSound();
